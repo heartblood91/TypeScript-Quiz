@@ -1,3 +1,1 @@
-# TypeScript-Quiz
-
-Cours Udemy sur React Redux avec du TypeScript 
+RobinLebhar/TypeScript-Quiz-Starter
