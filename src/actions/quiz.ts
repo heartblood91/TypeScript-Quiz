@@ -10,3 +10,22 @@ export const getQuizListItem = (questionAmount: number, difficulty: "easy" | "me
         dispatch({type: TYPES.getQuizListItems, payload: r.data.results})
     }
 }
+
+export const giveAnswer = (isCorrectAnswer: boolean, isLastQuestion: boolean) => {
+    return async (dispatch:ThunkDispatch<{},{}, AnyAction>) => {
+        if (isCorrectAnswer) {
+            dispatch({type: TYPES.incrementScore})
+        }
+
+        if (!isLastQuestion) {
+            dispatch({type: TYPES.setNextQuestion})
+        }
+    }
+}
+
+export const restart = () => {
+    return async (dispatch:ThunkDispatch<{},{}, AnyAction>) => {
+        dispatch({type: TYPES.restart})
+        dispatch(getQuizListItem(10, "easy"))
+    }
+    }
