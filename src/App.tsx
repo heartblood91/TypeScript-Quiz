@@ -6,22 +6,29 @@ import { ThunkDispatch } from "redux-thunk";
 import { AnyAction} from "redux";
 import { connect } from "react-redux";
 import { IStore } from "./reducers";
+import { getQuizListItem } from "./actions/quiz";
+
+
+interface OwnProps {
+
+}
 
 interface StateProps {
 
 }
 
 interface DispatchProps {
+  getQuizListItem : typeof getQuizListItem
 
 } 
-
-interface OwnProps {
-
-}
 
 type Props = StateProps & DispatchProps & OwnProps
 
 export class App extends Component <Props>{
+
+  componentDidMount(){
+this.props.getQuizListItem(10, "easy")
+  }
 
   private renderHeader = () => {
     return (<Grid container direction="row" justify="space-between" alignItems="flex-start">
@@ -68,11 +75,17 @@ const mapStateToProps = (state: IStore): StateProps => {
   }
 }
 
-const mapDispatchToProps = (dispatch: ThunkDispatch<{}, {}, AnyAction>): DispatchProps => {
+const mapDispatchToProps = (dispatch: ThunkDispatch<{}, {}, any>): DispatchProps => {
   return {
+    getQuizListItem: (questionAmount: number, difficulty: "easy" | "medium" | "hard") => dispatch(getQuizListItem(questionAmount, difficulty))
 
   }
 }
+
+// const mapDispatchToProps:any = {
+//   getQuizListItem
+// }
+
 
 export default connect<StateProps, DispatchProps, OwnProps, IStore>(mapStateToProps, mapDispatchToProps)  (App)
 
