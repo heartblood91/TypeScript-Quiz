@@ -5,7 +5,7 @@ import { StyledButtonTrue, StyledButtonFalse } from "./style";
 import { ThunkDispatch } from "redux-thunk";
 import { connect } from "react-redux";
 import { IStore } from "./reducers";
-import { getQuizListItem, giveAnswer } from "./actions/quiz";
+import { getQuizListItem, giveAnswer, restart } from "./actions/quiz";
 import { IQuizListItem } from "./models";
 import { getCurrentQuizListItem } from "./selectors/quiz";
 
@@ -25,6 +25,7 @@ interface StateProps {
 interface DispatchProps {
   getQuizListItem : typeof getQuizListItem
   giveAnswer: typeof giveAnswer
+  restart : typeof restart
 
 } 
 
@@ -61,20 +62,38 @@ private answerQuestion = (answer: "True" | "False") => () => {
   this.props.giveAnswer(isCorrectAnswer, this.props.currentQuizItemIndex === this.props.quizListLength - 1)
 }
   private renderButton = () => {
+    if (this.props.currentQuizItemIndex < this.props.quizListLength - 1) {
+      return (
+        <Grid container direction="row" alignItems="center" justify="space-evenly" >
+          <StyledButtonTrue onClick={this.answerQuestion("True")}>TRUE</StyledButtonTrue>
+          <StyledButtonFalse onClick={this.answerQuestion("False")}>FALSE</StyledButtonFalse>
+        </Grid>
+      )
+    } else {
+      return (
+        <Grid container direction="column" alignItems="center" justify="center" >
+           <Box mt={10} style={{marginBottom: "5%"}} fontSize={20} className="txt"> Final score : {this.props.score} / {this.props.quizListLength}</Box>
+          <StyledButtonTrue onClick={this.props.restart}>Restart</StyledButtonTrue>
+        </Grid>
+      )
+    }
+   
+  }
+
+  renderContent =  () => {
     return (
-      <Grid container direction="row" alignItems="center" justify="space-evenly" >
-        <StyledButtonTrue onClick={this.answerQuestion("True")}>TRUE</StyledButtonTrue>
-        <StyledButtonFalse onClick={this.answerQuestion("False")}>FALSE</StyledButtonFalse>
-      </Grid>
-    )
+      <div>
+        {this.renderHeader()}
+        {this.props.currentQuizItemIndex < this.props.quizListLength - 1 && this.renderQuestionInfo()}
+        {this.renderButton()}
+      </div >
+    );
   }
 
   render() {
     return (
       <Container maxWidth="lg" >
-        {this.renderHeader()}
-        {this.props.currentQuizItem && this.renderQuestionInfo()}
-        {this.renderButton()}
+        {this.props.currentQuizItem && this.renderContent()}
       </Container >
     );
   }
@@ -94,6 +113,7 @@ const mapDispatchToProps = (dispatch: ThunkDispatch<{}, {}, any>): DispatchProps
   return {
     getQuizListItem: (questionAmount: number, difficulty: "easy" | "medium" | "hard") => dispatch(getQuizListItem(questionAmount, difficulty)),
     giveAnswer: (isCorrectAnswer: boolean, isLastQuestion: boolean)  => dispatch(giveAnswer(isCorrectAnswer, isLastQuestion)),
+    restart: () => dispatch(restart())
 
   }
 }
