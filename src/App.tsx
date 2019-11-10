@@ -3,13 +3,11 @@ import { Container, Grid } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import { StyledButtonTrue, StyledButtonFalse } from "./style";
 import { ThunkDispatch } from "redux-thunk";
-import { AnyAction} from "redux";
 import { connect } from "react-redux";
 import { IStore } from "./reducers";
-import { getQuizListItem } from "./actions/quiz";
-import { IQuizListItem, IQuizList } from "./models";
+import { getQuizListItem, giveAnswer } from "./actions/quiz";
+import { IQuizListItem } from "./models";
 import { getCurrentQuizListItem } from "./selectors/quiz";
-import { stat } from "fs";
 
 
 interface OwnProps {
@@ -26,6 +24,7 @@ interface StateProps {
 
 interface DispatchProps {
   getQuizListItem : typeof getQuizListItem
+  giveAnswer: typeof giveAnswer
 
 } 
 
@@ -57,11 +56,15 @@ const {quizListLength, currentQuizItem, currentQuizItemIndex} = this.props
     </Grid>)
   }
 
+private answerQuestion = (answer: "True" | "False") => () => {
+  const isCorrectAnswer = this.props.currentQuizItem!.correct_answer === answer
+  this.props.giveAnswer(isCorrectAnswer, this.props.currentQuizItemIndex === this.props.quizListLength - 1)
+}
   private renderButton = () => {
     return (
       <Grid container direction="row" alignItems="center" justify="space-evenly" >
-        <StyledButtonTrue>TRUE</StyledButtonTrue>
-        <StyledButtonFalse >FALSE</StyledButtonFalse>
+        <StyledButtonTrue onClick={this.answerQuestion("True")}>TRUE</StyledButtonTrue>
+        <StyledButtonFalse onClick={this.answerQuestion("False")}>FALSE</StyledButtonFalse>
       </Grid>
     )
   }
@@ -89,7 +92,8 @@ const mapStateToProps = (state: IStore): StateProps => {
 
 const mapDispatchToProps = (dispatch: ThunkDispatch<{}, {}, any>): DispatchProps => {
   return {
-    getQuizListItem: (questionAmount: number, difficulty: "easy" | "medium" | "hard") => dispatch(getQuizListItem(questionAmount, difficulty))
+    getQuizListItem: (questionAmount: number, difficulty: "easy" | "medium" | "hard") => dispatch(getQuizListItem(questionAmount, difficulty)),
+    giveAnswer: (isCorrectAnswer: boolean, isLastQuestion: boolean)  => dispatch(giveAnswer(isCorrectAnswer, isLastQuestion)),
 
   }
 }
