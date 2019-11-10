@@ -8,6 +8,7 @@ import { IStore } from "./reducers";
 import { getQuizListItem, giveAnswer, restart } from "./actions/quiz";
 import { IQuizListItem } from "./models";
 import { getCurrentQuizListItem } from "./selectors/quiz";
+import SnackBar from "@material-ui/core/Snackbar"
 
 
 interface OwnProps {
@@ -29,9 +30,17 @@ interface DispatchProps {
 
 } 
 
+interface LocaleStateProps {
+  message: string
+  isOpen: boolean
+  className : "good" | "wrong"
+}
+
 type Props = StateProps & DispatchProps & OwnProps
 
-export class App extends Component <Props>{
+export class App extends Component <Props, LocaleStateProps>{
+state : LocaleStateProps = { message: "", isOpen: false, className:"good"}
+
 
   componentDidMount(){
 this.props.getQuizListItem(10, "easy")
@@ -60,6 +69,7 @@ const {quizListLength, currentQuizItem, currentQuizItemIndex} = this.props
 private answerQuestion = (answer: "True" | "False") => () => {
   const isCorrectAnswer = this.props.currentQuizItem!.correct_answer === answer
   this.props.giveAnswer(isCorrectAnswer, this.props.currentQuizItemIndex === this.props.quizListLength - 1)
+  this.setState({message: isCorrectAnswer ? "Well done!" : "Nope.", className: isCorrectAnswer? "good" : "wrong", isOpen: true})
 }
   private renderButton = () => {
     if (this.props.currentQuizItemIndex < this.props.quizListLength - 1) {
@@ -80,12 +90,24 @@ private answerQuestion = (answer: "True" | "False") => () => {
    
   }
 
+private onSnackBarClose = () => {
+  this.setState({isOpen : false})
+}
+
   renderContent =  () => {
     return (
       <div>
         {this.renderHeader()}
         {this.props.currentQuizItemIndex < this.props.quizListLength - 1 && this.renderQuestionInfo()}
         {this.renderButton()}
+        <SnackBar 
+          anchorOrigin={{vertical: "bottom", horizontal: "center"}} 
+          autoHideDuration={400} 
+          open={this.state.isOpen} 
+          onClose={this.onSnackBarClose} 
+          message={this.state.message} 
+          className ={this.state.className} 
+        />
       </div >
     );
   }
