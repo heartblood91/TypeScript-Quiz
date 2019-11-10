@@ -7,6 +7,9 @@ import { AnyAction} from "redux";
 import { connect } from "react-redux";
 import { IStore } from "./reducers";
 import { getQuizListItem } from "./actions/quiz";
+import { IQuizListItem, IQuizList } from "./models";
+import { getCurrentQuizListItem } from "./selectors/quiz";
+import { stat } from "fs";
 
 
 interface OwnProps {
@@ -14,6 +17,10 @@ interface OwnProps {
 }
 
 interface StateProps {
+  currentQuizItem?: IQuizListItem;
+  currentQuizItemIndex: number;
+  quizListLength: number;
+  score: number;
 
 }
 
@@ -36,15 +43,17 @@ this.props.getQuizListItem(10, "easy")
         <div style={{ color: "#e55fff" }}>Easy</div>
         <div style={{ color: "#2858fb" }} >Quizy</div>
       </Box>
-      <Box mt={10} fontSize={20} className="txt"> Score : TODO / TODO</Box>
+      <Box mt={10} fontSize={20} className="txt"> Score : {this.props.score} / {this.props.quizListLength}</Box>
     </Grid>)
   }
 
   private renderQuestionInfo = () => {
+const {quizListLength, currentQuizItem, currentQuizItemIndex} = this.props
+
     return (<Grid container direction="column" alignItems="center" justify="center" style={{ minHeight: '40vh' }}>
-      <div className="txt question_number">Question N° TODO / TODO </div>
-      <div className="txt question_number"> Category TODO </div>
-      <div className="txt" >TypeScript Quiz starter ! Ici nous devrions afficher une question !</div>
+      <div className="txt question_number">Question N° {currentQuizItem} / {quizListLength} </div>
+      <div className="txt question_number"> Category {currentQuizItem!.category} </div>
+      <div className="txt" dangerouslySetInnerHTML= {{__html: currentQuizItem!.question}}> </div>
     </Grid>)
   }
 
@@ -61,7 +70,7 @@ this.props.getQuizListItem(10, "easy")
     return (
       <Container maxWidth="lg" >
         {this.renderHeader()}
-        {this.renderQuestionInfo()}
+        {this.props.currentQuizItem && this.renderQuestionInfo()}
         {this.renderButton()}
       </Container >
     );
@@ -71,7 +80,10 @@ this.props.getQuizListItem(10, "easy")
 const mapStateToProps = (state: IStore): StateProps => {
 
   return {
-
+    currentQuizItem: getCurrentQuizListItem(state),
+    currentQuizItemIndex: state.quiz.currentQuizItemIndex,
+    quizListLength: state.quiz.quizListItem.length,
+    score: state.quiz.score
   }
 }
 
