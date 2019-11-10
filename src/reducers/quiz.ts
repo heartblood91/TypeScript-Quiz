@@ -3,7 +3,7 @@ import { IQuizListItem, Action } from '../models'
 import { AnyAction } from 'redux'
 
 export interface IQuizInitialState {
-    quizListItem: IQuizListItem[];
+    quizListItem: IQuizListItem[],
     currentQuizItemIndex: number;
     score: number;
 }

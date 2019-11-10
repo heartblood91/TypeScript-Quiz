@@ -51,9 +51,9 @@ this.props.getQuizListItem(10, "easy")
 const {quizListLength, currentQuizItem, currentQuizItemIndex} = this.props
 
     return (<Grid container direction="column" alignItems="center" justify="center" style={{ minHeight: '40vh' }}>
-      <div className="txt question_number">Question N° {currentQuizItem} / {quizListLength} </div>
+      <div className="txt question_number">Question N° {currentQuizItemIndex + 1} / {quizListLength} </div>
       <div className="txt question_number"> Category {currentQuizItem!.category} </div>
-      <div className="txt" dangerouslySetInnerHTML= {{__html: currentQuizItem!.question}}> </div>
+      <div className="txt" dangerouslySetInnerHTML={{__html: currentQuizItem!.question}}></div>
     </Grid>)
   }
 
